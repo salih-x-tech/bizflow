@@ -51,3 +51,16 @@ export const createBusinessSchema = z.strictObject({
 export type CreateBusinessInput = z.infer<
   typeof createBusinessSchema
 >;
+
+export const updateBusinessSchema = createBusinessSchema
+  .omit({
+    currency: true,
+  })
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, {
+    error: "Provide at least one business field to update.",
+  });
+
+export type UpdateBusinessInput = z.infer<
+  typeof updateBusinessSchema
+>;
