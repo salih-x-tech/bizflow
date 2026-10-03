@@ -58,3 +58,25 @@ export type CreateProductInput = z.infer<
 export type UpdateProductInput = z.infer<
   typeof updateProductSchema
 >;
+
+export const listProductsQuerySchema = z.strictObject({
+  search: z
+    .string()
+    .trim()
+    .max(150, "Search must not exceed 150 characters.")
+    .default(""),
+
+  categoryId: objectIdSchema.optional(),
+
+  status: z
+    .enum(["Active", "Archived", "All"])
+    .default("Active"),
+
+  page: z.coerce.number().int().min(1).max(10_000).default(1),
+
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+
+export type ListProductsQuery = z.infer<
+  typeof listProductsQuerySchema
+>;
