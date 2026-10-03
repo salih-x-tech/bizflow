@@ -172,6 +172,7 @@ export async function removeStaff(
         ],
         {
           session: databaseSession,
+          ordered: true,
         },
       );
 
