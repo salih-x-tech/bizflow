@@ -4,6 +4,7 @@ import { apiError, apiSuccess } from "@/lib/api/response";
 import { consumeRateLimit } from "@/lib/auth/rate-limit";
 import { requireUser } from "@/lib/auth/require-user";
 import { updateStaffPermissions } from "@/services/staff/update-permissions.service";
+import { removeStaff } from "@/services/staff/remove-staff.service";
 
 export const runtime = "nodejs";
 
@@ -38,6 +39,37 @@ export async function PATCH(
       businessId,
       membershipId,
       input,
+    );
+
+    return apiSuccess({
+      membership,
+    });
+  } catch (error: unknown) {
+    return apiError(error);
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  context: StaffMembershipRouteContext,
+) {
+  try {
+    assertTrustedOrigin(request);
+
+    const user = await requireUser();
+    const { businessId, membershipId } = await context.params;
+
+    await consumeRateLimit({
+      scope: "staff:remove:user",
+      identifier: user.id,
+      limit: 30,
+      windowMs: 60 * 1000,
+    });
+
+    const membership = await removeStaff(
+      user.id,
+      businessId,
+      membershipId,
     );
 
     return apiSuccess({
