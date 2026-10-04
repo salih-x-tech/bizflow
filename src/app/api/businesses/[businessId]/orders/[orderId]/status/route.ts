@@ -4,15 +4,10 @@ import { apiError, apiSuccess } from "@/lib/api/response";
 import { consumeRateLimit } from "@/lib/auth/rate-limit";
 import { requireUser } from "@/lib/auth/require-user";
 import { updateOrderStatusSchema } from "@/lib/validation/order";
+import { cancelOrder } from "@/services/order/cancel-order.service";
 import { completeOrder } from "@/services/order/complete-order.service";
 
 export const runtime = "nodejs";
-
-const completionSchema = updateOrderStatusSchema.extend({
-  status: updateOrderStatusSchema.shape.status.extract([
-    "Completed",
-  ]),
-});
 
 type RouteContext = {
   params: Promise<{
@@ -39,13 +34,19 @@ export async function PATCH(
     });
 
     const input = await readJsonBody(request);
-    completionSchema.parse(input);
+    const data = updateOrderStatusSchema.parse(input);
 
-    const result = await completeOrder(
-      user.id,
-      businessId,
-      orderId,
-    );
+    const result = data.status === "Completed"
+      ? await completeOrder(
+          user.id,
+          businessId,
+          orderId,
+        )
+      : await cancelOrder(
+          user.id,
+          businessId,
+          orderId,
+        );
 
     return apiSuccess(result);
   } catch (error: unknown) {
