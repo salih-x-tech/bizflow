@@ -1,4 +1,5 @@
 import "server-only";
+import { AppError } from "@/lib/errors";
 import { listCustomersQuerySchema } from "@/lib/validation/customer";
 import { Customer } from "@/models/Customer";
 import { requireBusinessAccess } from "@/services/business/business-access.service";
@@ -13,13 +14,38 @@ export async function listCustomers(
   businessId: string,
   input: unknown,
 ) {
-  const { business } = await requireBusinessAccess(
+  const { business, membership } = await requireBusinessAccess(
     authenticatedUserId,
     businessId,
-    "canManageCustomers",
   );
 
+  const isOwner = membership.role === "Owner";
+
+  const canManageCustomers =
+    isOwner ||
+    membership.permissions.includes("canManageCustomers");
+
+  const canManageOrders =
+    isOwner ||
+    membership.permissions.includes("canManageOrders");
+
+  if (!canManageCustomers && !canManageOrders) {
+    throw new AppError(
+      "FORBIDDEN",
+      "You do not have permission to view customers.",
+      403,
+    );
+  }
+
   const query = listCustomersQuerySchema.parse(input);
+
+  if (!canManageCustomers && query.status !== "Active") {
+    throw new AppError(
+      "FORBIDDEN",
+      "Order lookups may only list active customers.",
+      403,
+    );
+  }
 
   const filter = {
     businessId: business._id,
@@ -51,11 +77,13 @@ export async function listCustomers(
       : {}),
   };
 
+  const fields = canManageCustomers
+    ? "_id businessId name email phone address notes status createdAt updatedAt"
+    : "_id name email phone";
+
   const [customers, total] = await Promise.all([
     Customer.find(filter)
-      .select(
-        "_id businessId name email phone address notes status createdAt updatedAt",
-      )
+      .select(fields)
       .sort({ createdAt: -1, _id: -1 })
       .skip((query.page - 1) * query.limit)
       .limit(query.limit)
@@ -65,18 +93,29 @@ export async function listCustomers(
   ]);
 
   return {
-    customers: customers.map((customer) => ({
-      id: customer._id.toString(),
-      businessId: customer.businessId.toString(),
-      name: customer.name,
-      email: customer.email,
-      phone: customer.phone,
-      address: customer.address,
-      notes: customer.notes,
-      status: customer.status,
-      createdAt: customer.createdAt,
-      updatedAt: customer.updatedAt,
-    })),
+    customers: customers.map((customer) => {
+      if (!canManageCustomers) {
+        return {
+          id: customer._id.toString(),
+          name: customer.name,
+          email: customer.email,
+          phone: customer.phone,
+        };
+      }
+
+      return {
+        id: customer._id.toString(),
+        businessId: customer.businessId.toString(),
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone,
+        address: customer.address,
+        notes: customer.notes,
+        status: customer.status,
+        createdAt: customer.createdAt,
+        updatedAt: customer.updatedAt,
+      };
+    }),
 
     pagination: {
       page: query.page,
