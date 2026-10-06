@@ -1,5 +1,6 @@
 import { apiError, apiSuccess } from "@/lib/api/response";
 import { requireUser } from "@/lib/auth/require-user";
+import { getInventoryReport } from "@/services/report/inventory-report.service";
 import { getOrderActivityReport } from "@/services/report/order-activity-report.service";
 import { getSalesReport } from "@/services/report/sales-report.service";
 
@@ -21,21 +22,37 @@ export async function GET(
       new URL(request.url).searchParams.entries(),
     );
 
-    const report =
-      query.type === "orders"
-        ? await getOrderActivityReport(
-            user.id,
-            businessId,
-            query,
-          )
-        : await getSalesReport(
-            user.id,
-            businessId,
-            query,
-          );
+    let report;
+
+    switch (query.type) {
+      case "inventory":
+        report = await getInventoryReport(
+          user.id,
+          businessId,
+          query,
+        );
+        break;
+
+      case "orders":
+        report = await getOrderActivityReport(
+          user.id,
+          businessId,
+          query,
+        );
+        break;
+
+      default:
+        report = await getSalesReport(
+          user.id,
+          businessId,
+          query,
+        );
+        break;
+    }
 
     return apiSuccess({ report });
-  } catch (error: unknown) {
+    } catch (error: unknown) {
+    console.error("Report generation error:", error);
     return apiError(error);
   }
 }
