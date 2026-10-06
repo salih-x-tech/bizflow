@@ -1,5 +1,6 @@
 import { apiError, apiSuccess } from "@/lib/api/response";
 import { requireUser } from "@/lib/auth/require-user";
+import { getOrderActivityReport } from "@/services/report/order-activity-report.service";
 import { getSalesReport } from "@/services/report/sales-report.service";
 
 export const runtime = "nodejs";
@@ -20,11 +21,18 @@ export async function GET(
       new URL(request.url).searchParams.entries(),
     );
 
-    const report = await getSalesReport(
-      user.id,
-      businessId,
-      query,
-    );
+    const report =
+      query.type === "orders"
+        ? await getOrderActivityReport(
+            user.id,
+            businessId,
+            query,
+          )
+        : await getSalesReport(
+            user.id,
+            businessId,
+            query,
+          );
 
     return apiSuccess({ report });
   } catch (error: unknown) {
