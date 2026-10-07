@@ -5,6 +5,8 @@ import { requireUser } from "@/lib/auth/require-user";
 import { readImageUpload } from "@/lib/media/read-image-upload";
 import { requireBusinessAccess } from "@/services/business/business-access.service";
 import { uploadMedia } from "@/services/media/upload-media.service";
+import { listMedia } from "@/services/media/list-media.service";
+
 
 export const runtime = "nodejs";
 
@@ -44,6 +46,30 @@ export async function POST(
     );
 
     return apiSuccess({ media }, 201);
+  } catch (error: unknown) {
+    return apiError(error);
+  }
+}
+
+export async function GET(
+  request: Request,
+  context: MediaRouteContext,
+) {
+  try {
+    const user = await requireUser();
+    const { businessId } = await context.params;
+
+    const query = Object.fromEntries(
+      new URL(request.url).searchParams.entries(),
+    );
+
+    const result = await listMedia(
+      user.id,
+      businessId,
+      query,
+    );
+
+    return apiSuccess(result);
   } catch (error: unknown) {
     return apiError(error);
   }
