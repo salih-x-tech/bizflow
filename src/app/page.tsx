@@ -1,69 +1,111 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { requirePageUser } from "@/lib/auth/require-page-user";
+import { listBusinesses } from "@/services/business/list-businesses.service";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Your businesses",
+};
+
+export default async function HomePage() {
+  const user = await requirePageUser();
+  const businesses = await listBusinesses(user.id);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
+      <header className="mb-10 flex flex-wrap items-center justify-between gap-4">
+        <Link
+          href="/"
+          className="rounded-lg text-2xl font-semibold tracking-tight"
+        >
+          BizFlow
+        </Link>
+
+        <p className="text-muted max-w-full break-words text-sm">
+          Signed in as {user.name}
+        </p>
+      </header>
+
+      <section aria-labelledby="businesses-heading">
+        <div className="mb-8 flex flex-wrap items-start justify-between gap-5">
+          <div className="space-y-2">
+            <h1
+              id="businesses-heading"
+              className="text-3xl font-semibold tracking-tight sm:text-4xl"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              Your businesses
+            </h1>
+
+            <p className="text-muted leading-7">
+              Choose a business to continue your work.
+            </p>
+          </div>
+
+          <Link
+            href="/businesses/new"
+            className="primary-button"
+          >
+            Create business
+          </Link>
+        </div>
+
+        {businesses.length === 0 ? (
+          <div className="glass-panel px-6 py-12 text-center sm:px-10">
+            <h2 className="text-xl font-semibold">
+              Your workspace starts here
+            </h2>
+
+            <p className="text-muted mx-auto mt-3 max-w-md leading-7">
+              Create your first business to manage customers,
+              products, stock, and orders. If you are joining
+              a team, accept the invitation sent by its owner.
+            </p>
+
+            <Link
+              href="/businesses/new"
+              className="primary-button mt-6"
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              Create your first business
+            </Link>
+          </div>
+        ) : (
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {businesses.map((business) => (
+              <li key={business.id} className="min-w-0">
+                <Link
+                  href={`/businesses/${business.id}`}
+                  className="glass-panel block h-full p-6 transition-colors hover:border-indigo-300/50"
+                >
+                  <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                    <span
+                      aria-hidden="true"
+                      className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/20 text-xl font-semibold text-indigo-200"
+                    >
+                      {business.name.slice(0, 1).toUpperCase()}
+                    </span>
+
+                    <span className="rounded-full border border-indigo-300/20 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-200">
+                      {business.role}
+                    </span>
+                  </div>
+
+                  <h2 className="break-words text-lg font-semibold">
+                    {business.name}
+                  </h2>
+
+                  <p className="text-muted mt-2 break-words text-sm">
+                    {business.businessType} · {business.currency}
+                  </p>
+
+                  <p className="mt-6 text-sm font-medium text-indigo-300">
+                    Open workspace →
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </main>
   );
 }
