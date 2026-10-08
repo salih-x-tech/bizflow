@@ -6,6 +6,8 @@ export interface IMedia {
   publicId: string;
   url: string;
   mimeType: string;
+  status: "Active" | "Deleting";
+  referenceVersion: number;
   uploadedBy: Types.ObjectId;
   uploadedAt: Date;
 }
@@ -46,6 +48,24 @@ const mediaSchema = new Schema<IMedia>(
       lowercase: true,
       maxlength: 100,
     },
+
+        status: {
+      type: String,
+      enum: ["Active", "Deleting"],
+      default: "Active",
+      required: true,
+    },
+    referenceVersion: {
+      type: Number,
+      default: 0,
+      required: true,
+      min: 0,
+      validate: {
+        validator: Number.isSafeInteger,
+        message: "Reference version must be a safe whole number.",
+      },
+    },
+    
     uploadedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -58,6 +78,8 @@ const mediaSchema = new Schema<IMedia>(
     },
   },
 );
+
+
 
 mediaSchema.index({ businessId: 1, uploadedAt: -1 });
 

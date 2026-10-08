@@ -9,6 +9,8 @@ import { Media } from "@/models/Media";
 import { Product } from "@/models/Product";
 import { requireBusinessAccess } from "@/services/business/business-access.service";
 import { assertTransactionPermission } from "@/services/business/transaction-permission.service";
+import { lockMediaReferences } from "@/services/media/lock-media-references.service";
+
 
 export async function updateProduct(
   authenticatedUserId: string,
@@ -34,9 +36,10 @@ export async function updateProduct(
   const productObjectId = new Types.ObjectId(productId);
   const connection = await connectDB();
 
-  await Promise.all([
+    await Promise.all([
     Product.init(),
     AuditLog.init(),
+    Media.init(),
   ]);
 
   return connection.connection.transaction(
@@ -91,22 +94,12 @@ export async function updateProduct(
           ? data.mediaIds.map((id) => new Types.ObjectId(id))
           : product.mediaIds;
 
-      if (
-        (data.mediaIds !== undefined || restoring) &&
-        mediaIds.length > 0
-      ) {
-        const mediaCount = await Media.countDocuments({
-          _id: { $in: mediaIds },
-          businessId: business._id,
-        }).session(databaseSession);
-
-        if (mediaCount !== mediaIds.length) {
-          throw new AppError(
-            "INVALID_MEDIA_REFERENCE",
-            "Every media record must belong to this business.",
-            400,
-          );
-        }
+        if (data.mediaIds !== undefined || restoring) {
+        await lockMediaReferences(
+          business._id,
+          mediaIds,
+          databaseSession,
+        );
       }
 
       if (data.name !== undefined) {

@@ -17,8 +17,9 @@ export async function listMedia(
   const query = listMediaQuerySchema.parse(input);
 
   const filter = {
-    businessId: business._id,
-  };
+  businessId: business._id,
+  status: { $ne: "Deleting" as const },
+};
 
   const [records, total] = await Promise.all([
     Media.find(filter)

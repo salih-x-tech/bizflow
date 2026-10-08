@@ -26,6 +26,7 @@ export async function getMedia(
   const record = await Media.findOne({
     _id: new Types.ObjectId(mediaId),
     businessId: business._id,
+    status: { $ne: "Deleting" },
   })
     .select(
       "_id businessId url mimeType uploadedBy uploadedAt",

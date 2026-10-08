@@ -11,6 +11,8 @@ import { Media } from "@/models/Media";
 import { Product } from "@/models/Product";
 import { requireBusinessAccess } from "@/services/business/business-access.service";
 import { assertTransactionPermission } from "@/services/business/transaction-permission.service";
+import { lockMediaReferences } from "@/services/media/lock-media-references.service";
+
 
 export async function createProduct(
   authenticatedUserId: string,
@@ -28,11 +30,12 @@ export async function createProduct(
   const mediaIds = data.mediaIds.map((id) => new Types.ObjectId(id));
   const connection = await connectDB();
 
-  await Promise.all([
+    await Promise.all([
     Product.init(),
     Inventory.init(),
     InventoryAdjustment.init(),
     AuditLog.init(),
+    Media.init(),
   ]);
 
   return connection.connection.transaction(
@@ -58,20 +61,11 @@ export async function createProduct(
         );
       }
 
-      if (mediaIds.length > 0) {
-        const mediaCount = await Media.countDocuments({
-          _id: { $in: mediaIds },
-          businessId: business._id,
-        }).session(databaseSession);
-
-        if (mediaCount !== mediaIds.length) {
-          throw new AppError(
-            "INVALID_MEDIA_REFERENCE",
-            "Every media record must belong to this business.",
-            400,
-          );
-        }
-      }
+        await lockMediaReferences(
+        business._id,
+        mediaIds,
+        databaseSession,
+      );
 
       const [product] = await Product.create(
         [
