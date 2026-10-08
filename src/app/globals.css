@@ -1,8 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+
+  --background: #080d1a;
+  --foreground: #edf2ff;
+  --muted: #b1bdd3;
+  --accent: #a5b4fc;
+  --danger: #fda4af;
+
+  --glass-background: rgba(19, 29, 51, 0.88);
+  --glass-border: rgba(203, 213, 255, 0.18);
 }
 
 @theme inline {
@@ -12,15 +20,162 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  min-height: 100%;
+  background: var(--background);
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(
+      ellipse at 10% 10%,
+      rgba(99, 102, 241, 0.2),
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse at 90% 80%,
+      rgba(14, 165, 233, 0.14),
+      transparent 45%
+    ),
+    var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+::selection {
+  background: #6366f1;
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.glass-panel {
+  border: 1px solid var(--glass-border);
+  border-radius: 1.5rem;
+  background: var(--glass-background);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@supports (backdrop-filter: blur(20px)) {
+  .glass-panel {
+    background: rgba(19, 29, 51, 0.65);
+    backdrop-filter: blur(20px);
+  }
+}
+
+.glass-input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(203, 213, 255, 0.25);
+  border-radius: 0.875rem;
+  background: rgba(8, 13, 26, 0.72);
+  color: var(--foreground);
+}
+
+.glass-input::placeholder {
+  color: var(--muted);
+}
+
+.glass-input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.glass-input:disabled {
+  opacity: 0.6;
+}
+
+select.glass-input option {
+  background: #131d33;
+  color: var(--foreground);
+}
+
+.primary-button {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.875rem;
+  background: #4f46e5;
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 160ms ease;
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.primary-button:disabled {
+  opacity: 0.6;
+}
+
+.secondary-button {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 0.875rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--foreground);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 160ms ease;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.secondary-button:disabled {
+  opacity: 0.6;
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
