@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requirePageUser } from "@/lib/auth/require-page-user";
 import { listBusinesses } from "@/services/business/list-businesses.service";
+import { LogoutButton } from "@/components/auth/logout-button";
+
 
 export const metadata: Metadata = {
   title: "Your businesses",
@@ -21,9 +23,13 @@ export default async function HomePage() {
           BizFlow
         </Link>
 
-        <p className="text-muted max-w-full break-words text-sm">
-          Signed in as {user.name}
-        </p>
+        <div className="flex flex-wrap items-center gap-4">
+          <p className="text-muted max-w-full break-words text-sm">
+            Signed in as {user.name}
+          </p>
+
+          <LogoutButton />
+        </div>
       </header>
 
       <section aria-labelledby="businesses-heading">
