@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 
 export const listMediaQuerySchema = z.strictObject({
+  includeDeleting: z.enum(["true", "false"]).default("false").transform((value) => value === "true"),
   page: z.coerce
     .number()
     .int()

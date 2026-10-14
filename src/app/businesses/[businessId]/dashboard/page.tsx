@@ -157,9 +157,9 @@ export default async function DashboardPage({
                   className="flex flex-wrap items-center justify-between gap-4 py-4"
                 >
                   <div className="min-w-0 space-y-1">
-                    <p className="break-all text-sm font-medium">
+                    <Link href={`/businesses/${businessId}/orders/${order.id}`} className="break-all text-sm font-medium text-indigo-300">
                       Order {order.id.slice(-8).toUpperCase()}
-                    </p>
+                    </Link>
 
                     <p className="text-muted text-xs">
                       {formatDate(order.createdAt)} · UTC
@@ -224,9 +224,9 @@ export default async function DashboardPage({
                     key={product.productId}
                     className="flex flex-wrap items-center justify-between gap-3 py-4"
                   >
-                    <p className="min-w-0 break-words text-sm font-medium">
+                    <Link href={`/businesses/${businessId}/inventory/${product.productId}`} className="min-w-0 break-words text-sm font-medium text-indigo-300">
                       {product.name}
-                    </p>
+                    </Link>
 
                     <p className="text-sm font-semibold text-amber-200">
                       {product.quantity} remaining

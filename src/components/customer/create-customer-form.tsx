@@ -28,6 +28,7 @@ export function CreateCustomerForm({
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const customersPath = `/businesses/${businessId}/customers`;
 
   async function handleSubmit(
@@ -41,6 +42,7 @@ export function CreateCustomerForm({
     const name = String(formData.get("name") ?? "").trim();
 
     setError("");
+    setEmailError("");
 
     if (!name) {
       setError("Customer name is required.");
@@ -77,6 +79,9 @@ export function CreateCustomerForm({
         !("success" in result) ||
         result.success !== true
       ) {
+        if (getErrorMessage(result).includes("email already exists")) {
+          setEmailError("Email must be unique within this business, including archived customers.");
+        }
         setError(
           response.status === 401
             ? "Your session has expired. Log in again before adding a customer."
@@ -139,8 +144,11 @@ export function CreateCustomerForm({
               type="email"
               autoComplete="email"
               maxLength={254}
+              aria-invalid={Boolean(emailError)}
+              aria-describedby="customer-email-error"
               className="glass-input"
             />
+            <p id="customer-email-error" className="form-error">{emailError}</p>
           </div>
 
           <div className="space-y-2">

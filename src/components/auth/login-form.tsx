@@ -19,7 +19,7 @@ function getErrorMessage(result: unknown): string {
   return "Unable to log in. Please try again.";
 }
 
-export function LoginForm() {
+export function LoginForm({ invitation = "" }: { invitation?: string }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -62,7 +62,7 @@ export function LoginForm() {
         return;
       }
 
-      router.replace("/");
+      router.replace(invitation ? `/staff-invitations/accept?token=${encodeURIComponent(invitation)}` : "/");
       router.refresh();
     } catch {
       setError(

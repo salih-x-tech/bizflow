@@ -19,7 +19,7 @@ function getErrorMessage(result: unknown): string {
   return "Unable to create your account. Please try again.";
 }
 
-export function RegisterForm() {
+export function RegisterForm({ invitation = "" }: { invitation?: string }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -111,7 +111,7 @@ export function RegisterForm() {
           Your account has been created. Log in to get started.
         </p>
 
-        <Link href="/login" className="primary-button w-full">
+        <Link prefetch={false} href={invitation ? `/login?invitation=${encodeURIComponent(invitation)}` : "/login"} className="primary-button w-full">
           Continue to login
         </Link>
       </div>

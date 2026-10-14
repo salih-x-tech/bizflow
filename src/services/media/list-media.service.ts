@@ -18,13 +18,13 @@ export async function listMedia(
 
   const filter = {
   businessId: business._id,
-  status: { $ne: "Deleting" as const },
+  ...(query.includeDeleting ? {} : { status: { $ne: "Deleting" as const } }),
 };
 
   const [records, total] = await Promise.all([
     Media.find(filter)
       .select(
-        "_id businessId url mimeType uploadedBy uploadedAt",
+        "_id businessId url mimeType status uploadedBy uploadedAt",
       )
       .sort({ uploadedAt: -1, _id: -1 })
       .skip((query.page - 1) * query.limit)
@@ -40,6 +40,7 @@ export async function listMedia(
       businessId: record.businessId.toString(),
       url: record.url,
       mimeType: record.mimeType,
+      status: record.status,
       uploadedBy: record.uploadedBy.toString(),
       uploadedAt: record.uploadedAt,
     })),

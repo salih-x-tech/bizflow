@@ -26,10 +26,9 @@ export async function getMedia(
   const record = await Media.findOne({
     _id: new Types.ObjectId(mediaId),
     businessId: business._id,
-    status: { $ne: "Deleting" },
   })
     .select(
-      "_id businessId url mimeType uploadedBy uploadedAt",
+      "_id businessId url mimeType status uploadedBy uploadedAt",
     )
     .lean();
 
@@ -46,6 +45,7 @@ export async function getMedia(
     businessId: record.businessId.toString(),
     url: record.url,
     mimeType: record.mimeType,
+    status: record.status,
     uploadedBy: record.uploadedBy.toString(),
     uploadedAt: record.uploadedAt,
   };

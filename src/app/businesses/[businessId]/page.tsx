@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { requirePageUser } from "@/lib/auth/require-page-user";
 import { AppError } from "@/lib/errors";
 import { requireBusinessAccess } from "@/services/business/business-access.service";
+import Link from "next/link";
+import type { BusinessPermission } from "@/lib/permissions";
 
 export const metadata: Metadata = {
   title: "Business overview",
@@ -80,6 +82,21 @@ export default async function WorkspacePage({
           </dd>
         </div>
       </dl>
+      <div className="mt-8 space-y-4">
+        <h2 className="text-lg font-semibold">Start here</h2>
+        <div className="flex flex-wrap gap-3">
+          {([
+            { label: "View dashboard", path: "dashboard", permission: "canViewDashboard" },
+            { label: "Add customer", path: "customers/new", permission: "canManageCustomers" },
+            { label: "Add product", path: "products/new", permission: "canManageProducts" },
+            { label: "Adjust stock", path: "inventory", permission: "canManageInventory" },
+            { label: "Create order", path: "orders/new", permission: "canManageOrders" },
+          ] satisfies { label: string; path: string; permission: BusinessPermission }[])
+            .filter((item) => membership.role === "Owner" || membership.permissions.includes(item.permission))
+            .map((item) => <Link key={item.path} className="secondary-button" href={`/businesses/${businessId}/${item.path}`}>{item.label}</Link>)}
+        </div>
+        {membership.role === "Staff" && !membership.permissions.length && <p className="text-muted text-sm">Your membership is active. Ask the owner to grant permissions for the tools you need.</p>}
+      </div>
     </section>
   );
 }

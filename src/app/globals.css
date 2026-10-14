@@ -9,7 +9,7 @@
   --accent: #a5b4fc;
   --danger: #fda4af;
 
-  --glass-background: rgba(19, 29, 51, 0.88);
+  --glass-background: #131d33;
   --glass-border: rgba(203, 213, 255, 0.18);
 }
 
@@ -28,6 +28,7 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
+  overflow-wrap: anywhere;
   background:
     radial-gradient(
       ellipse at 10% 10%,
@@ -78,10 +79,10 @@ button:disabled {
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-@supports (backdrop-filter: blur(20px)) {
+@supports (backdrop-filter: blur(12px)) {
   .glass-panel {
     background: rgba(19, 29, 51, 0.65);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(12px);
   }
 }
 
@@ -158,6 +159,12 @@ select.glass-input option {
 
 .secondary-button:disabled {
   opacity: 0.6;
+}
+
+.primary-button,
+.secondary-button {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .text-muted {

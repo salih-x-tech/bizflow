@@ -1,0 +1,1 @@
+export default function Loading() { return <section aria-label="Loading workspace" role="status" className="glass-panel space-y-5 p-8"><span className="sr-only">Loading workspace…</span>{[1, 2, 3, 4].map((row) => <div key={row} className="h-14 animate-pulse rounded-xl bg-white/10" />)}</section>; }
