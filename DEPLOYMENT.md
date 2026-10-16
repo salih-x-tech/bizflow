@@ -1,7 +1,9 @@
 # BizFlow production deployment
 
-Phase 17 started on 16 October 2026. This checklist records preparation, not a
-completed deployment. See QA-RESULTS.md for actual verification and open gaps.
+Phase 17 started on 16 October 2026. The initial production deployment and APP_URL
+redeploy are Ready at https://bizflow-kappa.vercel.app, using commit
+`4e03d25c1eb55f82c5038a750c34d10e817d4107`. Public smoke/security checks pass;
+authenticated production acceptance remains pending. See QA-RESULTS.md for evidence.
 
 ## 1. GitHub handoff
 
@@ -55,7 +57,10 @@ tenant isolation, product/media flows, orders/stock/invoices and actual recovery
 email links against designated production acceptance accounts. Production cookie
 security must stay enabled. Record the deployed commit and URL, keep the prior
 working deployment available for rollback, and verify again after changing the
-domain or APP_URL. No live site has been published by this checklist.
+domain or APP_URL. The initial deployment has been published; production account,
+database, business, email and media acceptance still require a designated signed-in
+production session. No production accounts or business records were created by
+the public checks.
 
 Official references:
 - [Import a Git repository](https://vercel.com/docs/git)

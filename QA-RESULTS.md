@@ -381,3 +381,36 @@ no subsequent login or old-session revocation evidence. Reset acceptance remains
 unverified despite the user's completion report. No credential or token was read.
 The next scheduled project phase is Phase 17 production deployment; the earlier
 instruction to leave it untouched remains in effect until the user asks to begin.
+
+### Initial production deployment — 16 October 2026
+
+User deployed BizFlow through Vercel. Independently confirmed the project under
+Salih Hayat's projects, the stable domain https://bizflow-kappa.vercel.app,
+Production status Ready and source commit
+`4e03d25c1eb55f82c5038a750c34d10e817d4107`. Added APP_URL as a non-secret Config
+value for Production only, set to that exact HTTPS origin, and redeployed the
+same source. The updated deployment
+`bizflow-niz9jlqd8-salih-hayat-s-projects.vercel.app` is Ready and assigned to the
+stable domain. The earlier deployment was
+`bizflow-32gsatygi-salih-hayat-s-projects.vercel.app`.
+
+All required variable names were present. Existing saved credential entries also
+apply to Preview. Inspected an editor without revealing or entering its write-only
+value, then cancelled it; no existing secret or environment scope was modified.
+APP_URL is the only environment-variable addition made by the agent this turn.
+No project, security, plan or paid-feature settings were changed otherwise.
+
+Live public suite: **47 endpoint cases / 49 passing Node results, zero failures or
+skips**. Protected unauthenticated GETs return 401/no-store and cross-site mutation
+requests return 403. Authentication pages /login, /register and /forgot-password
+return 200. Browser navigation to /account while unauthenticated redirected to
+/login. Development db-check GET and email-check/db-setup/transaction-check POST
+return 404 in production. GET email-check returns 405 because the route only
+supports POST; the actual POST guard was checked independently.
+
+These checks sent no credentials, emails, uploads or authenticated business
+mutations, and did not create production accounts or business records. A private
+production sign-in/registration is still needed to verify the production database
+and authenticated workflows; public checks do not establish those. Prior local
+password-reset completion remains independently unverified. Deployment records
+updated locally; no extra Git push was made for these documentation-only updates.
