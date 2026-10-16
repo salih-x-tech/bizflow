@@ -212,6 +212,18 @@ export function MutationButton({ url, method = "PATCH", body, label, confirmatio
       <p role="status" className="text-sm text-emerald-200">{success}</p>
       {confirmation && (
         <dialog ref={dialog} aria-labelledby={id} aria-describedby={`${id}-description`}
+          onKeyDown={(event) => {
+            if (event.key !== "Tab") return;
+            const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>("button:not(:disabled)"));
+            if (!buttons.length) { event.preventDefault(); return; }
+            const first = buttons[0];
+            const last = buttons[buttons.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault(); last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault(); first.focus();
+            }
+          }}
           onCancel={(event) => { if (pending) event.preventDefault(); }} onClose={() => setOpen(false)}
           className="glass-panel m-auto max-h-[90vh] w-[calc(100%_-_2rem)] max-w-md overflow-y-auto p-6 text-foreground backdrop:bg-black/70">
           <h2 id={id} className="text-xl font-semibold">{label}?</h2>

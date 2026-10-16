@@ -1,5 +1,9 @@
 # Phase 14 UI handoff
 
+Historical implementation handoff: the verification status below predates the
+authenticated QA runs. See [QA-RESULTS.md](QA-RESULTS.md) for current observed
+results and [TESTING.md](TESTING.md) for repeatable test commands and test scope.
+
 Reviewed on 14 October 2026. Changes remain uncommitted for review; nothing was pushed or deployed. The three pre-existing customer detail/edit/status files were preserved and completed.
 
 ## Implemented browser workflows
@@ -9,6 +13,7 @@ All paths below are relative to `/businesses/[businessId]` unless stated otherwi
 | Area | Browser interface |
 | --- | --- |
 | Account access | Existing login/register/logout retained; `/forgot-password`, `/reset-password`, and `/staff-invitations/accept` added. Invitation context survives login/register navigation. Invalid links and expired sessions have explicit feedback. |
+| Account profile | `/account` shows name, email, contact number, join date and initials. Name/contact/about edits use session-scoped validation and transactional account audit. My profile links appear in the chooser and workspace header. |
 | Workspace | Existing business selection/creation retained. Overview shortcuts and dashboard links respect permissions. `/settings` is owner-only; currency is displayed as immutable. |
 | Staff | `/staff` lists membership/invitation lifecycle states, creates invitations, edits approved permissions, confirms membership removal and invitation revocation, and shows the backend's exact email-delivery outcome. |
 | Customers | Existing list/search/filter/page/create retained. Detail editing, optional-field clearing, archive confirmation, restore, and paginated purchase history completed. |

@@ -4,6 +4,8 @@ import mongoose, { Schema, type Model } from "mongoose";
 export interface IUser {
   name: string;
   email: string;
+  phone?: string;
+  bio?: string;
   passwordHash: string;
   status: "Active" | "Disabled";
   createdAt: Date;
@@ -26,6 +28,8 @@ const userSchema = new Schema<IUser>(
       unique: true,
       maxlength: 254,
     },
+    phone: { type: String, trim: true, maxlength: 40 },
+    bio: { type: String, trim: true, maxlength: 500 },
     passwordHash: {
       type: String,
       required: true,

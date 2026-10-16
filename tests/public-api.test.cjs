@@ -11,7 +11,7 @@ const record = "222222222222222222222222";
 
 test("protected APIs reject requests without a session", options, async (context) => {
   const routes = [
-    "/api/auth/me", "/api/businesses",
+    "/api/auth/me", "/api/businesses", "/api/account/profile",
     ...[
       "", "/customers", `/customers/${record}`, "/categories", `/categories/${record}`,
       "/products", `/products/${record}`, "/inventory", "/inventory/adjustments",
@@ -34,6 +34,7 @@ test("protected APIs reject requests without a session", options, async (context
 
 test("untrusted origins are rejected before mutations", options, async (context) => {
   const cases = [
+    ["PATCH", "/api/account/profile"],
     ["POST", "/api/auth/login"], ["POST", "/api/auth/register"],
     ["POST", "/api/auth/forgot-password"], ["POST", "/api/auth/reset-password"],
     ["POST", "/api/auth/logout"], ["POST", "/api/staff-invitations/accept"],

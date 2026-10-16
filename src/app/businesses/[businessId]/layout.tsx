@@ -57,9 +57,11 @@ export default async function WorkspaceLayout({
         </Link>
 
         <div className="flex flex-wrap items-center gap-4">
-          <p className="text-muted max-w-full break-words text-sm">
+          <Link href="/account" className="text-muted max-w-full break-words text-sm hover:text-indigo-200">
             {user.name}
-          </p>
+          </Link>
+
+          <Link href="/account" className="secondary-button">My profile</Link>
 
           <Link href="/" className="secondary-button">
             Switch business

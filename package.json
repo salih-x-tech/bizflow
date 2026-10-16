@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test tests/ui-backend.test.cjs tests/security-contracts.test.cjs",
+    "test:api": "node --test tests/public-api.test.cjs",
+    "test:integration": "node --test tests/database-integration.test.cjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
